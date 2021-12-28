@@ -1,0 +1,6 @@
+FROM tritonclient
+
+RUN pip install jupyterlab
+
+WORKDIR /
+CMD ["/bin/bash", "-c", "jupyter lab --no-browser --allow-root --ip=*"]

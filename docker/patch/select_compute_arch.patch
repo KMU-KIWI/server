@@ -1,0 +1,20 @@
+index 7388d03..f69bce8 100644
+--- a/cmake/select_compute_arch.cmake
++++ b/cmake/select_compute_arch.cmake
+@@ -30,14 +30,14 @@ endif()
+ set(CUDA_KNOWN_GPU_ARCHITECTURES  "Fermi" "Kepler" "Maxwell")
+ 
+ # This list will be used for CUDA_ARCH_NAME = Common option (enabled by default)
+-set(CUDA_COMMON_GPU_ARCHITECTURES "3.0" "3.5" "5.0")
++set(CUDA_COMMON_GPU_ARCHITECTURES "3.5" "5.0")
+ 
+ if(CUDA_VERSION VERSION_LESS "7.0")
+   set(CUDA_LIMIT_GPU_ARCHITECTURE "5.2")
+ endif()
+ 
+ # This list is used to filter CUDA archs when autodetecting
+-set(CUDA_ALL_GPU_ARCHITECTURES "3.0" "3.2" "3.5" "5.0")
++set(CUDA_ALL_GPU_ARCHITECTURES "3.5" "5.0")
+ 
+ if(CUDA_VERSION VERSION_GREATER "7.0" OR CUDA_VERSION VERSION_EQUAL "7.0")
+   list(APPEND CUDA_KNOWN_GPU_ARCHITECTURES "Kepler+Tegra" "Kepler+Tesla" "Maxwell+Tegra")

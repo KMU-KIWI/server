@@ -1,0 +1,108 @@
+FROM nvcr.io/nvidia/tritonserver:21.10-py3
+
+ENV SSL_CERT_DIR=/etc/ssl/certs
+
+RUN apt-get update && apt-get install -y \
+    cmake \
+    libpq-dev \
+    libsndfile-dev \
+    libboost-system-dev \
+    libboost-thread-dev \
+    libboost-program-options-dev \
+    libboost-test-dev \
+    libeigen3-dev \
+    zlib1g-dev \
+    libbz2-dev \
+    liblzma-dev \
+    libsndfile1-dev \
+    libopenblas-dev \
+    libfftw3-dev \
+    libgflags-dev \
+    libgoogle-glog-dev \
+    libgl1-mesa-glx \
+    libomp-dev \
+    ffmpeg \
+    locales \
+    && rm -rf /var/lib/apt/lists/*
+
+RUN locale-gen en_US.UTF-8
+ENV LANG='en_US.UTF-8' LANGUAGE='en_US:en' LC_ALL='en_US.UTF-8'
+
+# run separately so pip can resolve versions
+RUN pip install --no-deps pororo
+
+RUN pip install torch==1.10.0+cu113 \
+    torchvision==0.11.1+cu113 \
+    torchaudio==0.10.0+cu113 \
+    pillow>=4.1.1 \
+    fairseq>=0.10.2 \
+    transformers>=4.0.0 \
+    sentence_transformers>=0.4.1.2 \
+    nltk>=3.5 \
+    word2word \
+    wget \
+    joblib \
+    lxml \
+    g2p_en \
+    whoosh \
+    marisa-trie \
+    kss \
+    dataclasses \
+    python-mecab-ko \
+    -f https://download.pytorch.org/whl/cu113/torch_stable.html
+
+WORKDIR /src/external_lib
+
+RUN pip install \
+    soundfile \
+    pydub \
+    librosa \
+    kollocate \
+    koparadigm \
+    g2pk \
+    fugashi \
+    ipadic \
+    romkan \
+    g2pM \
+    jieba \
+    opencv-python \
+    scikit-image \
+    editdistance==0.5.3 \
+    epitran==1.2 \
+    fastdtw==0.3.4 \
+    future \
+    Pillow==7.2.0 \
+    pinyin==0.4.0 \
+    scikit-learn \
+    scipy \
+    SoundFile==0.10.2 \
+    numba==0.48 \
+    ko_pron \
+    pandas
+
+WORKDIR /src/external_lib
+RUN git clone https://github.com/kpu/kenlm.git
+
+WORKDIR /src/external_lib/kenlm/build
+
+RUN cmake .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_POSITION_INDEPENDENT_CODE=ON && \
+    make -j 16
+
+ENV KENLM_ROOT_DIR="/src/external_lib/kenlm"
+
+WORKDIR /src/external_lib
+
+RUN git clone -b v0.2 https://github.com/facebookresearch/wav2letter.git
+
+COPY patch/CMakeLists.patch CMakeLists.patch
+COPY patch/select_compute_arch.patch select_compute_arch.patch
+
+RUN patch wav2letter/CMakeLists.txt CMakeLists.patch && \
+    patch wav2letter/cmake/select_compute_arch.cmake select_compute_arch.patch
+
+WORKDIR wav2letter/bindings/python 
+RUN pip install --no-deps -e .
+    #&& pip uninstall -y wav2letter \
+    #&& cp -r wav2letter /root/miniconda3/envs/kiwi/lib/python3.8/site-packages/
+
+WORKDIR /src

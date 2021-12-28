@@ -1,0 +1,17 @@
+name: "tts"
+backend: "python"
+
+input [
+  {
+    name: "RAW_TEXT"
+    data_type: TYPE_STRING
+    dims: [ 1 ]
+  }
+]
+output [
+  {
+    name: "GENERATED_SPEECH"
+    data_type: TYPE_FP32
+    dims: [ -1 ]
+  }
+]

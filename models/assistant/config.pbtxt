@@ -1,0 +1,17 @@
+name: "assistant"
+backend: "python"
+
+input [
+  {
+    name: "RAW_SPEECH"
+    data_type: TYPE_FP32
+    dims: [ -1 ]
+  }
+]
+output [
+  {
+    name: "GENERATED_SPEECH"
+    data_type: TYPE_FP32
+    dims: [ -1 ]
+  }
+]

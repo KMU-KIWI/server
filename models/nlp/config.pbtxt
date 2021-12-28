@@ -1,0 +1,17 @@
+name: "nlp"
+backend: "python"
+
+input [
+  {
+    name: "QUESTION"
+    data_type: TYPE_STRING
+    dims: [ 1 ]
+  }
+]
+output [
+  {
+    name: "ANSWER"
+    data_type: TYPE_STRING
+    dims: [ 1 ]
+  }
+]
